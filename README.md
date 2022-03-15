@@ -40,3 +40,9 @@ User Stories
   Take the 2 sagas for address balance and transactions, and create a common pattern to execute these API calls that makes it easy for us to add a 3rd saga without continuing to duplicate this pattern.
 - [Hard] As a user, I want to involve my colleagues in what I'm working on. I want to be able to link someone to an address that would automatically request the balance and transactions.
   Use the `/address/:address` route to build a way that when a user selects an address to view the transactions, the URL will update, so that the user can quickly share it with someone else, that will automatically: Add the address and select it (which should trigger to pull down the transactions)
+
+To give you some insight into what we're looking for, and questions that we're likely to ask:
+
+- How well are decisions documented? Assume that someone else has to maintain your code and that it's readable.
+- How well do you solve the user story? Did you think about multiple implementations?
+- If you were part of a team that needed to refactor or improve the application to better maintain and support it over the next 2-3 years, what are things you would change or improve, and why?
