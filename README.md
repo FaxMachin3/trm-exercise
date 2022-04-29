@@ -34,8 +34,9 @@ User Stories
 - [Easy] As a project maintainer, the Redux Sagas seem to follow a similar pattern and could be cleaned up to make it easier to maintain.
   Show your ability to refactor code.
   Take the 2 sagas for address balance and transactions, and create a common pattern to execute these API calls that makes it easy for us to add a 3rd saga without continuing to duplicate this pattern.
-- [Medium] As a data provider, you are sending us too many invalid ETH addresses. Please validate the address before requesting our API. Provide some feedback using the existing AntDesign Form to the user that their input is invalid.
+- [Medium] As a data provider, you are sending us too many invalid ETH addresses. Please validate the address before requesting our API.
   There's an easy-to-use package that supports [validating Ethereum addresses](https://www.npmjs.com/package/multicoin-address-validator). This is a NodeJS library that will require extra effort to use with Webpack, here's a hint here: https://viglucci.io/how-to-polyfill-buffer-with-webpack-5
+  In addition to validation, please add some feedback using the existing AntDesign Form to the user that their input is invalid.
 - [Medium] As a user, I want to see more than just the last 10 transactions an address has made.
   We need to be able to show more transactions, but Etherscan does not provide a total.
   Add a way to paginate this table.
