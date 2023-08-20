@@ -18,7 +18,10 @@ const Dashboard = memo(() => {
         </Row>
       </Col>
       <Col span={12}>
-        <DashboardTransactions selectedAddress={selectedAddress} />
+        <DashboardTransactions
+          key={selectedAddress}
+          selectedAddress={selectedAddress}
+        />
       </Col>
     </Row>
   );

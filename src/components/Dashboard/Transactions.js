@@ -1,12 +1,15 @@
-import React, { memo, useEffect, useRef } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { Col, message, Row, Spin, Table } from 'antd';
+import { Col, message, Row, Table } from 'antd';
+import WAValidator from 'multicoin-address-validator';
 import {
   ADDRESS_TRANSACTIONS,
   requestAddressTransactions,
 } from '../../redux/actions';
 import { STATUS_ERROR, STATUS_LOADING } from '../../constants/redux';
+import { ETH, MESSAGE, TRANSACTION_PAGE_SIZE } from '../../constants/common';
+import { increaseTotalBy } from '../../utils/common';
 
 const columns = [
   {
@@ -33,8 +36,7 @@ const columns = [
 
 const DashboardTransactions = memo(({ selectedAddress }) => {
   const dispatch = useDispatch();
-  const lastAddress = useRef();
-
+  const [currentPage, setCurrentPage] = useState(1);
   const transactions = useSelector(state => state.transactions);
   const requestStatus = useSelector(
     state => state.status[ADDRESS_TRANSACTIONS]
@@ -42,21 +44,33 @@ const DashboardTransactions = memo(({ selectedAddress }) => {
 
   // request Transactions whenever an Address changes
   useEffect(() => {
-    if (selectedAddress !== lastAddress.current && selectedAddress) {
-      dispatch(requestAddressTransactions({ address: selectedAddress }));
+    /**
+     * if we wanna prevent fetching for same address or page
+     * then we should add a caching layer rather than checking for multiple conditions
+     *
+     * Also, memo would not re-render this component until the address changes
+     */
+    if (selectedAddress) {
+      dispatch(
+        requestAddressTransactions({
+          address: selectedAddress,
+          page: currentPage,
+        })
+      );
     }
-
-    lastAddress.current = selectedAddress;
-  }, [dispatch, selectedAddress]);
+  }, [dispatch, selectedAddress, currentPage]);
 
   // display a message if our request errors
   useEffect(() => {
-    if (requestStatus === STATUS_ERROR) {
-      message.error(
-        'Sorry, we are not able to retrieve the transactions for that address. Please try again later.'
-      );
+    if (
+      !WAValidator.validate(selectedAddress, ETH) &&
+      requestStatus === STATUS_ERROR
+    ) {
+      message.error(MESSAGE.TRANSACTIONS_ERROR);
     }
-  }, [requestStatus]);
+  }, [requestStatus, selectedAddress]);
+
+  const onPageChange = (page, _pageSize) => setCurrentPage(page);
 
   return (
     <Row>
@@ -64,18 +78,22 @@ const DashboardTransactions = memo(({ selectedAddress }) => {
         {selectedAddress ? (
           <Row gutter={[16, 16]}>
             <Col span={24}>Viewing transactions for {selectedAddress}:</Col>
-            {requestStatus === STATUS_LOADING ? (
-              <Col span={24}>
-                <Spin />
-              </Col>
-            ) : (
-              <Table
-                columns={columns}
-                dataSource={transactions || []}
-                pagination={false}
-                rowKey="hash"
-              />
-            )}
+            <Table
+              loading={requestStatus === STATUS_LOADING}
+              columns={columns}
+              dataSource={transactions || []}
+              size="large"
+              pagination={{
+                onChange: onPageChange,
+                current: currentPage,
+                pageSize: TRANSACTION_PAGE_SIZE,
+                showSizeChanger: false,
+                total:
+                  TRANSACTION_PAGE_SIZE *
+                  (currentPage + increaseTotalBy(transactions)),
+              }}
+              rowKey="hash"
+            />
           </Row>
         ) : (
           `Select an address to view it's latest transactions`

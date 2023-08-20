@@ -3,14 +3,14 @@ import { ADDRESS_BALANCE, ADDRESS_TRANSACTIONS } from './actions';
 
 import * as Api from './api';
 
-function* loadAddressBalance({ payload, type }) {
+function* commonAddressSaga({ payload, type, apiFunction }) {
   try {
     yield put({
       type: `${type}_REQUEST`,
     });
 
     // request our balance from Etherscan
-    const response = yield call(Api.getAddressBalance, payload);
+    const response = yield call(apiFunction, payload);
 
     yield put({
       type: `${type}_SUCCESS`,
@@ -24,25 +24,18 @@ function* loadAddressBalance({ payload, type }) {
   }
 }
 
-function* loadAddressTransactions({ payload, type }) {
-  try {
-    yield put({
-      type: `${type}_REQUEST`,
-    });
+function* loadAddressBalance(action) {
+  yield* commonAddressSaga({
+    ...action,
+    apiFunction: Api.getAddressBalance,
+  });
+}
 
-    // request our address' transactions from Etherscan
-    const response = yield call(Api.getAddressTransactions, payload);
-
-    yield put({
-      type: `${type}_SUCCESS`,
-      payload,
-      response: response?.data,
-    });
-  } catch (e) {
-    yield put({
-      type: `${type}_ERROR`,
-    });
-  }
+function* loadAddressTransactions(action) {
+  yield* commonAddressSaga({
+    ...action,
+    apiFunction: Api.getAddressTransactions,
+  });
 }
 
 export default function* sagas() {

@@ -2,6 +2,7 @@ import _ from 'lodash';
 
 import { ADDRESS_BALANCE, ADDRESS_TRANSACTIONS } from './actions';
 import { STATUS_ERROR, STATUS_LOADING } from '../constants/redux';
+import { convertWeiToEth } from '../utils/common';
 
 const defaultState = {
   addresses: [],
@@ -65,7 +66,7 @@ const updateState = (state, action) => {
           [
             {
               address: action.payload.address,
-              balance: action.response.result,
+              balance: convertWeiToEth(action.response.result),
             },
           ],
           state.addresses
@@ -79,9 +80,16 @@ const updateState = (state, action) => {
       };
 
     case `${ADDRESS_TRANSACTIONS}_SUCCESS`:
+      if (_.isNil(action.response?.result)) {
+        return [];
+      }
       // replace our transactions with the entire payload
       return {
-        transactions: action.response?.result || [],
+        transactions:
+          action.response?.result?.map(transaction => ({
+            ...transaction,
+            value: convertWeiToEth(transaction.value),
+          })) ?? [],
       };
 
     default:

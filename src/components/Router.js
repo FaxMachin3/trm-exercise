@@ -21,6 +21,7 @@ const Router = () => (
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/address/:address" element={<Dashboard />} />
+          <Route path="*" element={<div>404!</div>} />
         </Routes>
       </Content>
     </Layout>

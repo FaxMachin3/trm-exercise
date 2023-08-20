@@ -6,7 +6,7 @@ export const requestAddressBalance = ({ address }) => ({
   payload: { address },
 });
 
-export const requestAddressTransactions = ({ address }) => ({
+export const requestAddressTransactions = ({ address, page = 1 }) => ({
   type: ADDRESS_TRANSACTIONS,
-  payload: { address },
+  payload: { address, page },
 });

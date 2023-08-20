@@ -1,7 +1,8 @@
-import React, { memo, useCallback } from 'react';
+import React, { memo, useCallback, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 
 import { Col, Table } from 'antd';
+import { useParams, useNavigate } from 'react-router-dom';
 
 const columns = [
   {
@@ -15,14 +16,21 @@ const columns = [
 ];
 
 const DashboardAddresses = memo(({ setSelectedAddress }) => {
+  const { address: addressFromUrl } = useParams();
+  const navigate = useNavigate();
   const addresses = useSelector(state => state.addresses);
 
   const onAddressClick = useCallback(
     ({ address }) => {
       setSelectedAddress(address);
+      navigate(`/address/${address}`);
     },
-    [setSelectedAddress]
+    [setSelectedAddress, navigate]
   );
+
+  useEffect(() => {
+    !!addressFromUrl && onAddressClick({ address: addressFromUrl });
+  }, [addressFromUrl, setSelectedAddress, onAddressClick]);
 
   return (
     <Col span={24}>
